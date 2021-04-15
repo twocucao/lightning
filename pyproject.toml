@@ -1,0 +1,65 @@
+[tool.poetry]
+name = "lightning-plus"
+version = "0.1.0"
+description = ""
+authors = ["twocucao <twocucao@gmail.com>", "jeff@gitmen.com"]
+license = "MIT"
+include = ["lightning_plus/templates/", "lightning_plus/static/"]
+
+[[tool.poetry.source]]
+name = "aliyun"
+url = 'https://mirrors.aliyun.com/pypi/simple/'
+default = true
+
+[tool.poetry.dependencies]
+python = "^3.9"
+arrow = "^1.0.3"
+celery = "^5.0.5"
+django-cors-headers = "^3.7.0"
+django-extensions = "^3.1.2"
+django-environ = "^0.4.5"
+djangorestframework = "^3.12.4"
+django-rest-swagger = "^2.2.0"
+factory-boy = "^3.2.0"
+jsonfield = "^3.1.0"
+mysqlclient = "^2.0.3"
+oss2 = "^2.14.0"
+openpyxl = "^3.0.7"
+raven = "^6.10.0"
+werkzeug = "^1.0.1"
+pydash = "^5.0.0"
+django-guardian = "^2.3.0"
+django-redis = "^4.12.1"
+qcloud-python-sts = "^3.0.5"
+wechatpy = "^1.8.15"
+psycopg2-binary = "^2.8.6"
+django-mptt = "^0.12.0"
+django-filter = "^2.4.0"
+django-debug-toolbar = "^3.2"
+django-db-geventpool = "^4.0.0"
+gevent = "^21.1.2"
+
+[tool.poetry.dev-dependencies]
+black = "^20.8b1"
+
+[tool.poetry.scripts]
+djcli = 'lightning_plus.manage:main'
+
+[tool.black]
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

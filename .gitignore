@@ -111,3 +111,4 @@ service/
 manage.py
 
 .idea
+.DS_Store
