@@ -4,11 +4,36 @@ from typing import Optional
 
 from lightning_plus.contrib.validator import Validator
 from lightning_plus.graphql.admin.base import router
-from lightning_plus.graphql.admin.types import TActivity, TProfile
+from lightning_plus.graphql.admin.types import TActivity, TSysUser, TSetting, TSysGroup
 
 
 @router.item("activity", output=TActivity)
 def activity():
+    ...
+
+
+@router.item("profile", output=TSysUser)
+def profile():
+    ...
+
+
+@router.item("settings", output=TSetting)
+def settings():
+    ...
+
+
+@router.pagination("sys_users", output=TSysUser)
+def sys_users():
+    ...
+
+
+@router.pagination("sys_groups", output=TSysGroup)
+def sys_groups():
+    ...
+
+
+@router.item("admin_schema", output=TSysGroup)
+def admin_schema():
     ...
 
 
@@ -40,24 +65,24 @@ class VLogin(Validator):
     date: datetime.date
     datetime: datetime.datetime
     password: Optional[str]
-    type: EnumLoginType
-    types: list[EnumLoginType]
+    # type: EnumLoginType
+    # types: list[EnumLoginType]
 
-    class Item(Validator):
-        id: int
-        name: str
+    # class Item(Validator):
+    #     id: int
+    #     name: str
+    #
+    #     class NestItem(Validator):
+    #         type: EnumLoginType
+    #         id: int
+    #
+    #     nest_item: list[NestItem]
+    #
+    # items: list[Item]
 
-        class NestItem(Validator):
-            type: EnumLoginType
-            id: int
 
-        nest_item: list[NestItem]
-
-    items: list[Item]
-
-
-@router.mutation("login", output=TProfile)
-def do_login(form: VLogin):
+@router.mutation("login", output=TSysUser)
+def login(form: VLogin):
     ...
 
 

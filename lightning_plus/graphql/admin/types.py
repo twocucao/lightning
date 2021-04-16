@@ -1,14 +1,6 @@
 import graphene as gr
 
 
-class TUser(gr.ObjectType):
-    id = gr.Int()
-    openid = gr.String()
-    nickname = gr.String()
-    sex = gr.String()
-    avatar = gr.String()
-
-
 class TActivity(gr.ObjectType):
     id = gr.Int()
     title = gr.String()
@@ -18,22 +10,56 @@ class TActivity(gr.ObjectType):
     type = gr.String()
 
 
-class TProfile(gr.ObjectType):
+class TSysGroup(gr.ObjectType):
     id = gr.Int()
     name = gr.String()
-    avatar = gr.String()
 
 
-class TFaceTemplate(gr.ObjectType):
+class TSysUser(gr.ObjectType):
     id = gr.Int()
-    name = gr.String()
-    image = gr.String()
-    activity = gr.Field(TActivity)
+    email = gr.String()
+    date_joined = gr.DateTime()
+    first_name = gr.String()
+    username = gr.String()
+    groups = gr.List(TSysGroup)
+    is_active = gr.Boolean()
+    is_staff = gr.Boolean()
+    is_superuser = gr.Boolean()
+    last_login = gr.DateTime()
+    last_name = gr.String()
+    permissions = gr.List(gr.String)
+    user_permissions = gr.List(gr.String)
 
 
-class TFaceOrder(gr.ObjectType):
+class TContentType(gr.ObjectType):
     id = gr.Int()
-    image = gr.String()
+    app_label = gr.String()
+    app_verbose_name = gr.String()
+    model = gr.String()
+
+
+class TSysPermission(gr.ObjectType):
+    id = gr.Int()
+    codename = gr.String()
+    content_type = gr.String()
+    display_name = gr.String()
     name = gr.String()
-    user = gr.Field(TUser)
-    template = gr.Field(TFaceTemplate)
+
+
+class TSetting(gr.ObjectType):
+    logo = gr.String()
+    title = gr.String()
+
+
+class TMenu(gr.ObjectType):
+    id = gr.Int()
+    icon = gr.String()
+    model = gr.String()
+    name = gr.String()
+    page = gr.String()
+    parent_id = gr.Int()
+    path = gr.String()
+    sequence = gr.Int()
+    # type: "group" , "item"
+    type = gr.String()
+    children = gr.List(lambda: TMenu)
