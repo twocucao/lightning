@@ -108,7 +108,6 @@ venv.bak/
 blog/
 member/
 service/
-manage.py
 
 .idea
 .DS_Store
