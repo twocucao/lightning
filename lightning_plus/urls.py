@@ -2,11 +2,10 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
 from django.views import defaults as default_views
 
 from lightning_plus.puzzle.urls import urlpatterns as puzzle_urls
-from lightning_plus.lightning.urls import urlpatterns as lightning_urls
+from lightning_plus.graphql.admin.view import graphql_view as admin_graphql_view
 
 urlpatterns = (
     [
@@ -14,9 +13,11 @@ urlpatterns = (
             r"^api/puzzle/",
             include((puzzle_urls, "puzzle"), namespace="puzzle"),
         ),
-        path(
-            "",
-            include((lightning_urls, "lightning")),
+        url(r"^api/basebone/storage/", include("lightning_plus.storage.urls")),
+        url(r"^api/", include("lightning_plus.api_basebone.urls")),
+        url(
+            r"^admin/graphql",
+            admin_graphql_view,
         ),
         url(
             r"^400/$",

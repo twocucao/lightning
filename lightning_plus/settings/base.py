@@ -18,7 +18,6 @@ DJANGO_APPS = (
     "django.contrib.messages",
 )
 THIRD_PARTY_APPS = (
-    "corsheaders",
     "rest_framework",
     "mptt",
     "django_filters",
@@ -33,6 +32,7 @@ LOCAL_APPS = (
     "lightning_plus.lightning",
     "lightning_plus.shield",
     "lightning_plus.puzzle",
+    "lightning_plus.graphql",
     "lightning_plus.scrm",
     "django.contrib.admin",
 )
@@ -45,14 +45,13 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+    "lightning_plus.lightning.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    # "lightning_plus.core.middleware.LoggingTimeMiddleware",
 ]
 
 # MANAGER CONFIGURATION
@@ -93,18 +92,16 @@ LANGUAGE_CODE = "zh-hans"
 # See: https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
 
+TEMPLATES_DIR = os.path.join(ROOT_DIR, "templates")
 # Application definition
 TEMPLATES = [
     {
         # See: https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES-BACKEND
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "APP_DIRS": True,
+        "DIRS": [TEMPLATES_DIR],
         "OPTIONS": {
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-debug
             "debug": DEBUG,
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
-            # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
-            # See: https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
@@ -152,8 +149,6 @@ AUTOSLUG_SLUGIFY_FUNCTION = "slugify.slugify"
 ADMIN_URL = r"^{}/".format(os.getenv("DJANGO_ADMIN_URL", "admin"))
 
 INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
-
-CORS_ORIGIN_ALLOW_ALL = True
 
 if not os.path.exists("/dev/log"):
     syslog_address = "/var/run/syslog"
@@ -284,3 +279,6 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
 }
+
+REAL_IP_ENVIRON = "X-Real-IP"
+
