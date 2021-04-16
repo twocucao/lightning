@@ -1,5 +1,3 @@
-from django.contrib.admin import ModelAdmin as DjangoModelAdmin
-
 # 属性的常量声明
 
 # 根据哪个字段进行筛选登录的用户，因为一个模型可能有多个字段指向用户模型

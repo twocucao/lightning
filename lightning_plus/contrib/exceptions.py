@@ -4,10 +4,6 @@ from typing import List, Any
 
 from django.http import JsonResponse
 
-# from lightning_plus.core.helpers import is_not_prod
-
-logger = logging.getLogger(__name__)
-
 
 class ApiException(Exception):
     code = 2400
@@ -28,6 +24,9 @@ class PermissionDenied(ApiException):
 
 class AuthFailed(ApiException):
     code = 2401
+
+
+logger = logging.getLogger(__name__)
 
 
 def format_exc(exc) -> str:

@@ -13,7 +13,7 @@ from lightning_plus.api_basebone.const.field_map import (
 from ..core import drf_field, gmeta
 from lightning_plus.api_basebone.core.decorators import BSM_ADMIN_COMPUTED_FIELDS_MAP
 from lightning_plus.api_basebone.core.fields import JSONField
-from jsonfield import JSONField as OriginJSONField
+from django.db.models import JSONField as OriginJSONField
 from rest_framework.fields import JSONField as DrfJSONField
 from lightning_plus.api_basebone.drf.fields import CharIntegerField
 from lightning_plus.api_basebone.export.fields import get_attr_in_gmeta_class

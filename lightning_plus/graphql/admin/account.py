@@ -1,77 +1,51 @@
-import graphene as gr
+from typing import Optional
 
-from lightning_plus.contrib.graphql.router import CreateForm, PartialForm, DeleteForm
+from lightning_plus.contrib.validator import Validator
 from lightning_plus.graphql.admin.base import router
+from lightning_plus.graphql.admin.types import TActivity
 
 
-class TUser(gr.ObjectType):
-    id = gr.Int()
-    openid = gr.String()
-    nickname = gr.String()
-    sex = gr.String()
-    avatar = gr.String()
-
-
-class TFaceActivity(gr.ObjectType):
-    id = gr.Int()
-    title = gr.String()
-    image = gr.String()
-    short_desc = gr.String()
-    status = gr.String()
-    type = gr.String()
-
-
-class TFaceTemplate(gr.ObjectType):
-    id = gr.Int()
-    name = gr.String()
-    image = gr.String()
-    activity = gr.Field(TFaceActivity)
-
-
-class TFaceOrder(gr.ObjectType):
-    id = gr.Int()
-    image = gr.String()
-    name = gr.String()
-    user = gr.Field(TUser)
-    template = gr.Field(TFaceTemplate)
-
-
-@router.item("parallel", output=TFaceActivity)
-def parallel():
+@router.item("activity", output=TActivity)
+def activity():
     ...
 
 
-@router.item("certification", output=TFaceActivity)
-def certification():
+@router.list("activity_list", output=TActivity)
+def activity_list():
     ...
 
 
-class FormCreateFaceTemplate(CreateForm):
-    activity_id = gr.Int(required=True)
-    name = gr.String(required=True)
-    image = gr.String(required=True)
+@router.pagination("activities", output=TActivity)
+def activities():
+    ...
+
+
+class VCreate(Validator):
+    activity_id: int
+    name: str
+    image: str
 
 
 @router.mutation
-def create_face_template(form: FormCreateFaceTemplate):
+def create_face_template(form: VCreate):
     ...
 
 
-class FormPartialFaceTemplate(PartialForm):
-    id = gr.Int(required=True)
-    name = gr.String(required=True)
-    image = gr.String(required=True)
+class VPartial(Validator):
+    activity_id: int
+    name: Optional[str]
+    image: str = "123"
 
 
 @router.mutation
-def partial_face_template(form: FormPartialFaceTemplate):
+def partial_face_template(form: VPartial):
     ...
 
 
-class FormDeleteFaceTemplate(DeleteForm):
-    id = gr.Int(required=True)
+class VDelete(Validator):
+    id: int
 
 
 @router.mutation
-def delete_face_template(form: FormDeleteFaceTemplate):
+def delete_face_template(form: VDelete):
     ...

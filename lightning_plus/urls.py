@@ -16,7 +16,7 @@ urlpatterns = (
         url(r"^api/basebone/storage/", include("lightning_plus.storage.urls")),
         url(r"^api/", include("lightning_plus.api_basebone.urls")),
         url(
-            r"^admin/graphql",
+            r"^api/admin/graphql",
             admin_graphql_view,
         ),
         url(

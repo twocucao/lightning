@@ -1,9 +1,7 @@
 from django.db import transaction
-from django.conf import settings as SETTINGS
 from django.contrib.auth.models import Permission, Group
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-
 from guardian.shortcuts import get_objects_for_user
 
 from lightning_plus.api_basebone.restful.funcs import bsm_func
@@ -96,10 +94,7 @@ def get_field_permissions(user, model, **kwargs):
     next_permissions = []
     for field_admin in field_admins:
         for fieldpermission in field_admin.fieldpermission_set.all():
-            permission = {}
-            permission["field"] = field_admin.field
-            permission["group"] = fieldpermission.group.id
-            permission["read"] = fieldpermission.read
-            permission["write"] = fieldpermission.write
+            permission = {"field": field_admin.field, "group": fieldpermission.group.id, "read": fieldpermission.read,
+                          "write": fieldpermission.write}
             next_permissions.append(permission)
     return next_permissions

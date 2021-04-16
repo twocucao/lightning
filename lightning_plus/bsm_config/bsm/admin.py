@@ -2,7 +2,6 @@ from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
 
 from lightning_plus.api_basebone.core.admin import BSMAdmin, register
-from lightning_plus.api_basebone.core.widgets import widgets
 
 from lightning_plus.bsm_config.models import Menu, Admin
 

@@ -3,7 +3,7 @@ import datetime
 import jwt
 from django.conf import settings
 
-from lightning_plus.contrib.graphql.exceptions import AuthFailed
+from lightning_plus.contrib.exceptions import AuthFailed
 
 
 def decode_jwt(token):
@@ -58,7 +58,7 @@ def auth_request(request):
         raise AuthFailed("incorrect claims, please check the audience and issuer")
     except jwt.InvalidIssuerError:
         raise AuthFailed("issuer invalid")
-    except jwt.InvalidAudience:
+    except jwt.InvalidAudienceError:
         raise AuthFailed("audience invalid")
     except jwt.InvalidTokenError:
         raise AuthFailed("Unable to parse authentication header")

@@ -1,8 +1,5 @@
 from django.db import connections
 
-# from django.db.models import Model
-
-
 class QuerySetExtend:
     """查询扩展"""
 

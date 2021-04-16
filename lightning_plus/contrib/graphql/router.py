@@ -3,6 +3,12 @@ import inspect
 from typing import List, Callable, Any, Dict
 
 import graphene as gr
+from graphene.utils.str_converters import to_camel_case
+from pydantic import BaseModel
+
+
+def smart_camel(s: str):
+    return to_camel_case(s).capitalize()
 
 
 def get_typed_signature(call: Callable) -> inspect.Signature:
@@ -26,6 +32,40 @@ def get_typed_annotation(param: inspect.Parameter, globalns: Dict[str, Any]) -> 
     return annotation
 
 
+def create_input_field(field_name, field_type, required=False) -> gr.InputField:
+    if not required:
+        return gr.InputField(field_type, out_name=field_name)
+    else:
+        return gr.InputField(gr.NonNull(field_type), out_name=field_name)
+
+
+def transform_validator_field(field_name, field_schema, required=False):
+    # validator
+    if field_schema["type"] == "string":
+        if field_schema.get("format", None) == "date":
+            return create_input_field(field_name, gr.Date, required)
+        if field_schema.get("format", None) == "date-time":
+            return create_input_field(field_name, gr.DateTime, required)
+        return create_input_field(field_name, gr.String, required)
+    if field_schema["type"] == "integer":
+        return create_input_field(field_name, gr.Int, required)
+    raise NotImplementedError
+
+
+def gen_args_from_validator(prefix, validator: BaseModel):
+    schema = validator.schema()
+    fields = {
+        k: transform_validator_field(field_name=k, field_schema=v, required=True)
+        for k, v in schema["properties"].items()
+    }
+    input_type_cls = type(
+        f"{prefix}",
+        (gr.InputObjectType,),
+        fields,
+    )
+    return input_type_cls
+
+
 class ResolverResult(typing.NamedTuple):
     resolver: typing.Callable
     parameters: typing.Mapping[str, inspect.Parameter]
@@ -39,28 +79,40 @@ class ResolverResult(typing.NamedTuple):
             id_type = self.parameters["id"].annotation
             if id_type is inspect.Signature.empty:
                 id_type = gr.Int
+            # 转一下 inputtype
             kwargs["id"] = id_type(required=True)
         return kwargs
 
-    def get_list_kwargs(self):
+    def get_list_kwargs(self, name):
+        name = smart_camel(name)
         kwargs = {}
         use_params = self.parameters.get("params", False)
         if use_params:
             params_type = self.parameters["params"].annotation
-            kwargs["params"] = params_type(required=True)
+            args = gen_args_from_validator(f"P{name}", params_type)
+            kwargs["params"] = args(required=True)
         return kwargs
 
-    def get_pagination_kwargs(self):
-        return self.get_list_kwargs()
+    def get_pagination_kwargs(self, name):
+        name = smart_camel(name)
+        kwargs = {}
+        use_params = self.parameters.get("params", False)
+        if use_params:
+            params_type = self.parameters["params"].annotation
+            args = gen_args_from_validator(f"P{name}", params_type)
+            kwargs["params"] = args(required=True)
+        return kwargs
 
-    def get_mutation_arguments_kwargs(self):
+    def get_mutation_arguments_kwargs(self, name):
+        name = smart_camel(name)
         kwargs = {}
         use_form = self.parameters.get("form", False)
         if use_form:
             form_type = self.parameters["form"].annotation
+            args = gen_args_from_validator(f"V{name}", form_type)
 
             class Arguments:
-                form = form_type(required=True)
+                form = args(required=True)
 
             kwargs["Arguments"] = Arguments
         return kwargs
@@ -119,7 +171,7 @@ class GqlRouter:
     def list(self, name, output, *args, **kwargs):
         def decorate(resolver_function):
             resolver_result = parse_resolver(resolver_function)
-            extra_kwargs = resolver_result.get_list_kwargs()
+            extra_kwargs = resolver_result.get_list_kwargs(resolver_function.__name__)
             field = gr.Field(
                 gr.List(output),
                 *args,
@@ -133,20 +185,21 @@ class GqlRouter:
 
         return decorate
 
-    def pagination(self, name, output, *args, **kwargs):
+    def pagination(self, name: str, output, *args, **kwargs):
         def decorate(resolver_function):
             resolver_result = parse_resolver(resolver_function)
-            extra_kwargs = resolver_result.get_list_kwargs()
+            extra_kwargs = resolver_result.get_pagination_kwargs(resolver_function.__name__)
             pagination_cls = type(
-                f"{output.__name__}Pagination",
+                f"TPagination{smart_camel(name)}",
                 (gr.ObjectType,),
                 {
                     "total": gr.Int(required=True),
                     "items": gr.NonNull(gr.List(gr.NonNull(output))),
+                    "__init__": lambda *args, **kwargs: None
                 },
             )
-            field = pagination_cls(
-                output,
+            field = gr.Field(
+                pagination_cls,
                 *args,
                 **kwargs,
                 **extra_kwargs,
@@ -170,7 +223,7 @@ class GqlRouter:
                         "Output": output or gr.Boolean,
                         "mutate": resolver_result.resolver,
                     },
-                    **resolver_result.get_mutation_arguments_kwargs(),
+                    **resolver_result.get_mutation_arguments_kwargs(resolver_function.__name__),
                 ),
             ).Field(description=resolver_function.__doc__)
             self.mutation_fields.append({"name": name, "field": field})
@@ -205,52 +258,3 @@ class GqlRouter:
         for field in self.query_fields:
             setattr(cls, field["name"], field["field"])
         return cls
-
-
-"""
-# quick crud input like form
-"""
-
-
-class BaseParams(gr.InputObjectType):
-    pass
-
-
-class BaseParamsPagination(gr.InputObjectType):
-    pass
-
-
-class BaseForm(gr.InputObjectType):
-    pass
-
-
-class CreateForm(BaseForm):
-    """
-    接收并且直接创建
-    """
-
-    pass
-
-
-class PartialForm(BaseForm):
-    """
-    部分更新
-    传递过来 form["a"] = None 则更新为 None
-    不传递过来 "a" = None 则不更新
-    """
-
-    id = gr.Int(required=True)
-
-
-class UpdateForm(BaseForm):
-    """
-    全局更新
-    传递过来 form["a"] = None 则更新为 None
-    不传递过来 "a" = None 则更新为 None
-    """
-
-    id = gr.Int(required=True)
-
-
-class DeleteForm(BaseForm):
-    id = gr.Int(required=True)

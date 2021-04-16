@@ -10,7 +10,7 @@ from werkzeug.local import Local
 
 from lightning_plus.api_basebone.core import drf_field, gmeta
 from lightning_plus.api_basebone.core.fields import JSONField
-from jsonfield import JSONField as OriginJSONField
+from django.db.models import JSONField as OriginJSONField
 from rest_framework.fields import JSONField as DrfJSONField
 from lightning_plus.api_basebone.restful.const import CLIENT_END_SLUG, MANAGE_END_SLUG
 from lightning_plus.api_basebone.utils import module
@@ -38,8 +38,10 @@ class BulkCreateListSerializer(serializers.ListSerializer):
 
 
 def validate_condition_required(
-    data, field=[], condition_field=None, operator=None, value=None
+    data, field=None, condition_field=None, operator=None, value=None
 ):
+    if field is None:
+        field = []
     """条件性必填校验，如type字段值为0时，price字段才必填。"""
     # 首先判断条件是否成立
     if not (condition_field and operator and value and condition_field in data):

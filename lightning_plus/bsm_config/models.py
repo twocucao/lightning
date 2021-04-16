@@ -10,7 +10,7 @@ from django.db import models
 from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 from django.apps.registry import apps
-from jsonfield import JSONField as OriginJSONField
+from django.db.models import JSONField as OriginJSONField
 
 from lightning_plus.api_basebone.core.fields import JSONField
 from lightning_plus.api_basebone.export.specs import FieldType

@@ -2,7 +2,6 @@ from rest_framework.pagination import (
     _positive_int,
     PageNumberPagination as OriginPageNumberPagination,
 )
-from rest_framework.response import Response
 
 
 class PageNumberPagination(OriginPageNumberPagination):

@@ -30,7 +30,7 @@ from graphql.error import (
 from graphql.execution import ExecutionResult
 from jwt.exceptions import PyJWTError
 
-from .exceptions import PermissionDenied
+from ..exceptions import PermissionDenied
 
 API_PATH = SimpleLazyObject(lambda: reverse("api"))
 

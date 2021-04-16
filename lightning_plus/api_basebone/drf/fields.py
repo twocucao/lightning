@@ -1,5 +1,5 @@
 from django.db import models
-from jsonfield import JSONField as OriginJSONField
+from django.db.models import JSONField as OriginJSONField
 from rest_framework.fields import JSONField as DrfJSONField
 from rest_framework import fields
 from rest_framework.serializers import ModelSerializer

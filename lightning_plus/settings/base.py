@@ -24,6 +24,7 @@ THIRD_PARTY_APPS = (
     "celery",
     "guardian",
     "django_extensions",
+    "graphiql_debug_toolbar"
 )
 
 LOCAL_APPS = (
@@ -45,7 +46,7 @@ INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
-    "lightning_plus.lightning.middleware.CorsMiddleware",
+    "lightning_plus.contrib.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -192,10 +193,22 @@ import os  # noqa
 
 MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa
 INSTALLED_APPS += ("debug_toolbar",)  # noqa
+MIDDLEWARE += ["lightning_plus.contrib.middleware.DebugToolbarMiddleware"]  # noqa
+ENABLE_DEBUG_TOOLBAR = True
+
 DEBUG_TOOLBAR_CONFIG = {
     "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
     "SHOW_TEMPLATE_CONTEXT": True,
+    "RESULTS_CACHE_SIZE": 100,
 }
+DEBUG_TOOLBAR_PANELS = [
+    "ddt_request_history.panels.request_history.RequestHistoryPanel",
+    "debug_toolbar.panels.timer.TimerPanel",
+    "debug_toolbar.panels.headers.HeadersPanel",
+    "debug_toolbar.panels.request.RequestPanel",
+    "debug_toolbar.panels.sql.SQLPanel",
+    "debug_toolbar.panels.profiling.ProfilingPanel",
+]
 
 TEMPLATES[0]["OPTIONS"]["debug"] = DEBUG  # type:ignore
 
