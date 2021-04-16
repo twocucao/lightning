@@ -191,7 +191,7 @@ Local settings
 
 import os  # noqa
 
-MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa
+# MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa
 INSTALLED_APPS += ("debug_toolbar",)  # noqa
 MIDDLEWARE += ["lightning_plus.contrib.middleware.DebugToolbarMiddleware"]  # noqa
 ENABLE_DEBUG_TOOLBAR = True

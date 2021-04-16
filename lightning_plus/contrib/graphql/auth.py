@@ -68,16 +68,4 @@ def auth_request(request):
     if payload.get("type", None) == "ADMIN":
         return 1
 
-    if payload.get("type", None) == "KID":
-        from lightning_plus.app_guaiclass.models import KidUser
-
-        user = KidUser.get_or_404(pk=payload["user_id"])
-        return user
-
-    if payload.get("type", None) == "FACE":
-        from lightning_plus.app_faceplus.models import FaceUser
-
-        user = FaceUser.get_or_404(pk=payload["user_id"])
-        return user
-
     return None

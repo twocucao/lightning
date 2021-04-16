@@ -18,6 +18,12 @@ class TActivity(gr.ObjectType):
     type = gr.String()
 
 
+class TProfile(gr.ObjectType):
+    id = gr.Int()
+    name = gr.String()
+    avatar = gr.String()
+
+
 class TFaceTemplate(gr.ObjectType):
     id = gr.Int()
     name = gr.String()

@@ -1,6 +1,7 @@
 import graphene as gr
 
 from lightning_plus.contrib.graphql.views import GraphQLView
+from lightning_plus.graphql.admin.auth import AuthMiddleware
 from lightning_plus.graphql.admin.base import router
 
 
@@ -25,4 +26,4 @@ class Mutation(MutationMixin, gr.ObjectType):
 
 schema = gr.Schema(query=Query, mutation=Mutation)
 
-graphql_view = GraphQLView.as_view(schema=schema)
+graphql_view = GraphQLView.as_view(schema=schema, middleware=[AuthMiddleware])

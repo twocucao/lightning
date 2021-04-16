@@ -1,8 +1,10 @@
 import typing
 import inspect
+from pprint import pprint
 from typing import List, Callable, Any, Dict
 
 import graphene as gr
+from devtools import debug
 from graphene.utils.str_converters import to_camel_case
 from pydantic import BaseModel
 
@@ -41,19 +43,25 @@ def create_input_field(field_name, field_type, required=False) -> gr.InputField:
 
 def transform_validator_field(field_name, field_schema, required=False):
     # validator
-    if field_schema["type"] == "string":
+    schema_type = field_schema["type"]
+    if schema_type == "string":
         if field_schema.get("format", None) == "date":
             return create_input_field(field_name, gr.Date, required)
         if field_schema.get("format", None) == "date-time":
             return create_input_field(field_name, gr.DateTime, required)
         return create_input_field(field_name, gr.String, required)
-    if field_schema["type"] == "integer":
+    if schema_type == "integer":
         return create_input_field(field_name, gr.Int, required)
+    # if schema_type == "array":
+    # if schema.get("enum", None):
+
     raise NotImplementedError
 
 
 def gen_args_from_validator(prefix, validator: BaseModel):
+    print(type(validator))
     schema = validator.schema()
+    debug(schema)
     fields = {
         k: transform_validator_field(field_name=k, field_schema=v, required=True)
         for k, v in schema["properties"].items()
